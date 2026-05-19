@@ -1,0 +1,46 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build
+        shell: cmd
+        run: |
+          qmake YoloLabel.pro
+          nmake
+
+      - name: Locate EXE
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force package | Out-Null
+          $exe = Get-ChildItem -Recurse -Filter "YoloLabel.exe" | Select-Object -First 1
+          if (-not $exe) { throw "YoloLabel.exe not found" }
+          Copy-Item $exe.FullName package\YoloLabel.exe
+          windeployqt package\YoloLabel.exe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YoloLabel-Windows
+          path: package
