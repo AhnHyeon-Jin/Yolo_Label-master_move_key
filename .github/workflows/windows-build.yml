@@ -3,7 +3,7 @@ name: Build Windows
 on:
   workflow_dispatch:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   build:
@@ -16,10 +16,10 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '5.15.2'
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
+          version: "6.5.3"
+          host: "windows"
+          target: "desktop"
+          arch: "win64_msvc2019_64"
 
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
